@@ -5,18 +5,7 @@
 #include "fcntl.h"
 #include "stdlib.h"
 #include "string.h"
-/***************************************************************
-Copyright © ALIENTEK Co., Ltd. 1998-2029. All rights reserved.
-文件名		: chrdevbaseApp.c
-作者	  	: 左忠凯
-版本	   	: V1.0
-描述	   	: chrdevbase驱测试APP。
-其他	   	: 使用方法：./chrdevbase /dev/chrdevbase <1>|<2>
-  			 argv[2] 1:读文件
-  			 argv[2] 2:写文件		
-论坛 	   	: www.openedv.com
-日志	   	: 初版V1.0 2019/1/30 左忠凯创建
-***************************************************************/
+
 
 static char usrdata[] = {"usr data!"};
 
