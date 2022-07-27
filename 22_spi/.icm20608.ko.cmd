@@ -1,0 +1,1 @@
+cmd_/home/lavin/work/git-src/imx6u/demo/imx6-linux-diver/22_spi/icm20608.ko := arm-linux-gnueabihf-ld -EL -r  -T ./scripts/module-common.lds --build-id  -o /home/lavin/work/git-src/imx6u/demo/imx6-linux-diver/22_spi/icm20608.ko /home/lavin/work/git-src/imx6u/demo/imx6-linux-diver/22_spi/icm20608.o /home/lavin/work/git-src/imx6u/demo/imx6-linux-diver/22_spi/icm20608.mod.o
