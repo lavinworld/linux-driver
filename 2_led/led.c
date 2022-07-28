@@ -136,6 +136,7 @@ static int __init led_init(void)
 	printk("led-init enter\n");
 	/* 初始化LED */
 	/* 1、寄存器地址映射 */
+	/*use ioremap */
   	IMX6U_CCM_CCGR1 = ioremap(CCM_CCGR1_BASE, 4);
 	SW_MUX_GPIO1_IO03 = ioremap(SW_MUX_GPIO1_IO03_BASE, 4);
   	SW_PAD_GPIO1_IO03 = ioremap(SW_PAD_GPIO1_IO03_BASE, 4);
@@ -143,6 +144,7 @@ static int __init led_init(void)
 	GPIO1_GDIR = ioremap(GPIO1_GDIR_BASE, 4);
 
 	/* 2、使能GPIO1时钟 */
+	/*readl : read 4 bytes*/
 	val = readl(IMX6U_CCM_CCGR1);
 	val &= ~(3 << 26);	/* 清楚以前的设置 */
 	val |= (3 << 26);	/* 设置新值 */
@@ -151,6 +153,7 @@ static int __init led_init(void)
 	/* 3、设置GPIO1_IO03的复用功能，将其复用为
 	 *    GPIO1_IO03，最后设置IO属性。
 	 */
+	/*writel : write 4 bytes*/
 	writel(5, SW_MUX_GPIO1_IO03);
 	
 	/*寄存器SW_PAD_GPIO1_IO03设置IO属性
