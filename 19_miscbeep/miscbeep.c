@@ -17,7 +17,7 @@
 #include <asm/uaccess.h>
 #include <asm/io.h>
  
-#define MISCBEEP_NAME		"miscbeep"	/* 名字 	*/
+#define MISCBEEP_NAME		"user-miscbeep"	/* 名字 	*/
 #define MISCBEEP_MINOR		144			/* 子设备号 */
 #define BEEPOFF 			0			/* 关蜂鸣器 */
 #define BEEPON 				1			/* 开蜂鸣器 */
@@ -104,14 +104,14 @@ static int miscbeep_probe(struct platform_device *dev)
 	printk("beep driver and device was matched!\r\n");
 	/* 设置BEEP所使用的GPIO */
 	/* 1、获取设备节点：beep */
-	miscbeep.nd = of_find_node_by_path("/beep");
+	miscbeep.nd = of_find_node_by_path("/user-beep");
 	if(miscbeep.nd == NULL) {
 		printk("beep node not find!\r\n");
 		return -EINVAL;
 	} 
 
 	/* 2、 获取设备树中的gpio属性，得到BEEP所使用的BEEP编号 */
-	miscbeep.beep_gpio = of_get_named_gpio(miscbeep.nd, "beep-gpio", 0);
+	miscbeep.beep_gpio = of_get_named_gpio(miscbeep.nd, "beep-pin", 0);
 	if(miscbeep.beep_gpio < 0) {
 		printk("can't get beep-gpio");
 		return -EINVAL;
@@ -152,14 +152,14 @@ static int miscbeep_remove(struct platform_device *dev)
 
  /* 匹配列表 */
  static const struct of_device_id beep_of_match[] = {
-     { .compatible = "atkalpha-beep" },
+     { .compatible = "user-compatible-beep" },
      { /* Sentinel */ }
  };
  
  /* platform驱动结构体 */
 static struct platform_driver beep_driver = {
      .driver     = {
-         .name   = "imx6ul-beep",         /* 驱动名字，用于和设备匹配 */
+         .name   = "user-drivername-beep",         /* 驱动名字，用于和设备匹配 */
          .of_match_table = beep_of_match, /* 设备树匹配表          */
      },
      .probe      = miscbeep_probe,
