@@ -11,8 +11,8 @@
 #include <asm/io.h>
 
 
-#define LED_MAJOR		200		/* 主设备号 */
-#define LED_NAME		"led" 	/* 设备名字 */
+#define LED_MAJOR		201		/* 主设备号 */
+#define LED_NAME		"user-reg-led" 	/* 设备名字 */
 
 #define LEDOFF 	0				/* 关灯 */
 #define LEDON 	1				/* 开灯 */
@@ -133,7 +133,7 @@ static int __init led_init(void)
 {
 	int retvalue = 0;
 	u32 val = 0;
-
+	printk("led-init enter\n");
 	/* 初始化LED */
 	/* 1、寄存器地址映射 */
   	IMX6U_CCM_CCGR1 = ioremap(CCM_CCGR1_BASE, 4);
@@ -182,6 +182,9 @@ static int __init led_init(void)
 		printk("register chrdev failed!\r\n");
 		return -EIO;
 	}
+
+	printk("led-init exit\n");
+
 	return 0;
 }
 
@@ -201,6 +204,8 @@ static void __exit led_exit(void)
 
 	/* 注销字符设备驱动 */
 	unregister_chrdev(LED_MAJOR, LED_NAME);
+
+	printk("led_exit\n");
 }
 
 module_init(led_init);
