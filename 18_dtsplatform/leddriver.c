@@ -179,7 +179,7 @@ static const struct of_device_id led_of_match[] = {
 /* platform驱动结构体 */
 static struct platform_driver led_driver = {
 	.driver		= {
-		.name	= "imx6ul-led",			/* 驱动名字，用于和设备匹配 */
+		.name	= "struct-led_driver-name-led",			/* 驱动名字，用于和设备匹配, used in no device tree ,show in /sys/bus/platform/drivers*/
 		.of_match_table	= led_of_match, /* 设备树匹配表 		 */
 	},
 	.probe		= led_probe,
