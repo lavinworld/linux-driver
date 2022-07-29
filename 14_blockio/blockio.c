@@ -172,8 +172,8 @@ static int imx6uirq_open(struct inode *inode, struct file *filp)
 	filp->private_data = &imx6uirq;	/* 设置私有数据 */
 	return 0;
 }
-#define  USE_WAIT_EVENT	1
-#define USE_WAIT_QUEUE	0
+#define  USE_WAIT_EVENT	0
+#define USE_WAIT_QUEUE	1
  /*
   * @description     : 从设备读取数据 
   * @param - filp    : 要打开的设备文件(文件描述符)
@@ -201,15 +201,15 @@ static ssize_t imx6uirq_read(struct file *filp, char __user *buf, size_t cnt, lo
 #if USE_WAIT_QUEUE
 	DECLARE_WAITQUEUE(wait, current);	/* 定义一个等待队列 */
 	// if(atomic_read(&dev->releasekey) == 0) {	/* 没有按键按下 */
-		add_wait_queue(&dev->r_wait, &wait);	/* 将等待队列添加到等待队列头 */
-		__set_current_state(TASK_INTERRUPTIBLE);/* 设置任务状态 */
-		schedule();							/* 进行一次任务切换 */
-		if(signal_pending(current))	{			/* 判断是否为信号引起的唤醒 */
-			ret = -ERESTARTSYS;
-			goto wait_error;
-		}
-		__set_current_state(TASK_RUNNING);      /* 将当前任务设置为运行状态 */
-	    remove_wait_queue(&dev->r_wait, &wait);    /* 将对应的队列项从等待队列头删除 */
+	add_wait_queue(&dev->r_wait, &wait);	/* 将等待队列添加到等待队列头 */
+	__set_current_state(TASK_INTERRUPTIBLE);/* 设置任务状态 */
+	schedule();							/* 进行一次任务切换 */
+	if(signal_pending(current))	{			/* 判断是否为信号引起的唤醒 */
+		ret = -ERESTARTSYS;
+		goto wait_error;
+	}
+	__set_current_state(TASK_RUNNING);      /* 将当前任务设置为运行状态 */
+	remove_wait_queue(&dev->r_wait, &wait);    /* 将对应的队列项从等待队列头删除 */
 	// }
 #endif
 
@@ -229,7 +229,7 @@ static ssize_t imx6uirq_read(struct file *filp, char __user *buf, size_t cnt, lo
 	}
 
 	#if USE_WAIT_QUEUE
-	// return 0;
+	return 0;
 	#else
 	return 0;
 	#endif
