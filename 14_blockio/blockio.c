@@ -20,7 +20,7 @@
 #include <asm/io.h>
  
 #define IMX6UIRQ_CNT		1			/* 设备号个数 	*/
-#define IMX6UIRQ_NAME		"blockio"	/* 名字 		*/
+#define IMX6UIRQ_NAME		"user-blockio"	/* 名字 		*/
 #define KEY0VALUE			0X01		/* KEY0按键值 	*/
 #define INVAKEY				0XFF		/* 无效的按键值 */
 #define KEY_NUM				1			/* 按键数量 	*/
@@ -96,8 +96,8 @@ void timer_function(unsigned long arg)
 
 	/* 唤醒进程 */
 	if(atomic_read(&dev->releasekey)) {	/* 完成一次按键过程 */
-		/* wake_up(&dev->r_wait); */
-		wake_up_interruptible(&dev->r_wait);
+		 wake_up(&dev->r_wait); 
+		// wake_up_interruptible(&dev->r_wait);
 	}
 }
 
@@ -112,7 +112,7 @@ static int keyio_init(void)
 	char name[10];
 	int ret = 0;
 	
-	imx6uirq.nd = of_find_node_by_path("/key");
+	imx6uirq.nd = of_find_node_by_path("/userkey");
 	if (imx6uirq.nd== NULL){
 		printk("key node not find!\r\n");
 		return -EINVAL;
@@ -172,7 +172,8 @@ static int imx6uirq_open(struct inode *inode, struct file *filp)
 	filp->private_data = &imx6uirq;	/* 设置私有数据 */
 	return 0;
 }
-
+#define  USE_WAIT_EVENT	1
+#define USE_WAIT_QUEUE	0
  /*
   * @description     : 从设备读取数据 
   * @param - filp    : 要打开的设备文件(文件描述符)
@@ -188,16 +189,18 @@ static ssize_t imx6uirq_read(struct file *filp, char __user *buf, size_t cnt, lo
 	unsigned char releasekey = 0;
 	struct imx6uirq_dev *dev = (struct imx6uirq_dev *)filp->private_data;
 
-#if 0
+#if USE_WAIT_EVENT
 	/* 加入等待队列，等待被唤醒,也就是有按键按下 */
  	ret = wait_event_interruptible(dev->r_wait, atomic_read(&dev->releasekey)); 
 	if (ret) {
-		goto wait_error;
+		printk("wait err\n");
+		goto data_error;
 	} 
 #endif
 
+#if USE_WAIT_QUEUE
 	DECLARE_WAITQUEUE(wait, current);	/* 定义一个等待队列 */
-	if(atomic_read(&dev->releasekey) == 0) {	/* 没有按键按下 */
+	// if(atomic_read(&dev->releasekey) == 0) {	/* 没有按键按下 */
 		add_wait_queue(&dev->r_wait, &wait);	/* 将等待队列添加到等待队列头 */
 		__set_current_state(TASK_INTERRUPTIBLE);/* 设置任务状态 */
 		schedule();							/* 进行一次任务切换 */
@@ -207,7 +210,8 @@ static ssize_t imx6uirq_read(struct file *filp, char __user *buf, size_t cnt, lo
 		}
 		__set_current_state(TASK_RUNNING);      /* 将当前任务设置为运行状态 */
 	    remove_wait_queue(&dev->r_wait, &wait);    /* 将对应的队列项从等待队列头删除 */
-	}
+	// }
+#endif
 
 	keyvalue = atomic_read(&dev->keyvalue);
 	releasekey = atomic_read(&dev->releasekey);
@@ -223,12 +227,19 @@ static ssize_t imx6uirq_read(struct file *filp, char __user *buf, size_t cnt, lo
 	} else {
 		goto data_error;
 	}
-	return 0;
 
+	#if USE_WAIT_QUEUE
+	// return 0;
+	#else
+	return 0;
+	#endif
+
+#if USE_WAIT_QUEUE
 wait_error:
 	set_current_state(TASK_RUNNING);		/* 设置任务为运行态 */
 	remove_wait_queue(&dev->r_wait, &wait);	/* 将等待队列移除 */
 	return ret;
+#endif
 
 data_error:
 	return -EINVAL;
