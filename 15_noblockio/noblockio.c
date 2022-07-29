@@ -22,7 +22,7 @@
 #include <asm/io.h>
  
 #define IMX6UIRQ_CNT		1			/* 设备号个数 	*/
-#define IMX6UIRQ_NAME		"noblockio"	/* 名字 		*/
+#define IMX6UIRQ_NAME		"user-noblockio"	/* 名字 		*/
 #define KEY0VALUE			0X01		/* KEY0按键值 	*/
 #define INVAKEY				0XFF		/* 无效的按键值 */
 #define KEY_NUM				1			/* 按键数量 	*/
@@ -98,8 +98,8 @@ void timer_function(unsigned long arg)
 
 	/* 唤醒进程 */
 	if(atomic_read(&dev->releasekey)) {	/* 完成一次按键过程 */
-		/* wake_up(&dev->r_wait); */
-		wake_up_interruptible(&dev->r_wait);
+		wake_up(&dev->r_wait); 
+		// wake_up_interruptible(&dev->r_wait);
 	}
 }
 
@@ -114,7 +114,7 @@ static int keyio_init(void)
 	char name[10];
 	int ret = 0;
 	
-	imx6uirq.nd = of_find_node_by_path("/key");
+	imx6uirq.nd = of_find_node_by_path("/userkey");
 	if (imx6uirq.nd== NULL){
 		printk("key node not find!\r\n");
 		return -EINVAL;
