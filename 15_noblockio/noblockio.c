@@ -233,7 +233,9 @@ unsigned int imx6uirq_poll(struct file *filp, struct poll_table_struct *wait)
 {
 	unsigned int mask = 0;
 	struct imx6uirq_dev *dev = (struct imx6uirq_dev *)filp->private_data;
-
+	/*
+		poll_wait最终调用的还是wait_queue，所以使用wake_up唤醒。
+	*/
 	poll_wait(filp, &dev->r_wait, wait);	/* 将等待队列头添加到poll_table中 */
 	
 	if(atomic_read(&dev->releasekey)) {		/* 按键按下 */
