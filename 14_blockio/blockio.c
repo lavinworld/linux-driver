@@ -172,8 +172,15 @@ static int imx6uirq_open(struct inode *inode, struct file *filp)
 	filp->private_data = &imx6uirq;	/* 设置私有数据 */
 	return 0;
 }
+/*
+wait_event is a simple version of wait_queue,
+first use wait_event ;
+在 Linux 中, 一个等待队列由一个"等待队列头"来管理, 一个 wait_queue_head_t 类型的结构, 定义在<linux/wait.h>中. 一个等待队列头可被定义和初始化,
+Linux 内核中睡眠的最简单方式是一个宏定义, 称为 wait_event(有几个变体); 它结合了处理睡眠的细节和进程在等待的条件的检查. wait_event 的形式是:
+*/
 #define  USE_WAIT_EVENT	0
 #define USE_WAIT_QUEUE	1
+
  /*
   * @description     : 从设备读取数据 
   * @param - filp    : 要打开的设备文件(文件描述符)
