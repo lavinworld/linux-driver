@@ -57,10 +57,14 @@ int main(int argc, char *argv[])
 
 	/* 设置信号SIGIO的处理函数 */
 	signal(SIGIO, sigio_signal_func);
+	printf("%d\n",__LINE__);
 	
 	fcntl(fd, F_SETOWN, getpid());		/* 设置当前进程接收SIGIO信号 	*/
+	printf("%d\n",__LINE__);
 	flags = fcntl(fd, F_GETFL);			/* 获取当前的进程状态 			*/
+	printf("%d\n",__LINE__);
 	fcntl(fd, F_SETFL, flags | FASYNC);	/* 设置进程启用异步通知功能 	*/	
+	printf("%d\n",__LINE__);
 
 	while(1) {
 		sleep(2);

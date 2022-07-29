@@ -23,7 +23,7 @@
 #include <asm/io.h>
  
 #define IMX6UIRQ_CNT		1			/* 设备号个数 	*/
-#define IMX6UIRQ_NAME		"asyncnoti"	/* 名字 		*/
+#define IMX6UIRQ_NAME		"user-asyncnoti"	/* 名字 		*/
 #define KEY0VALUE			0X01		/* KEY0按键值 	*/
 #define INVAKEY				0XFF		/* 无效的按键值 */
 #define KEY_NUM				1			/* 按键数量 	*/
@@ -122,7 +122,7 @@ static int keyio_init(void)
 	char name[10];
 	int ret = 0;
 	
-	imx6uirq.nd = of_find_node_by_path("/key");
+	imx6uirq.nd = of_find_node_by_path("/userkey");
 	if (imx6uirq.nd== NULL){
 		printk("key node not find!\r\n");
 		return -EINVAL;
@@ -260,6 +260,7 @@ unsigned int imx6uirq_poll(struct file *filp, struct poll_table_struct *wait)
 static int imx6uirq_fasync(int fd, struct file *filp, int on)
 {
 	struct imx6uirq_dev *dev = (struct imx6uirq_dev *)filp->private_data;
+	printk("%d\n",__LINE__);
 	return fasync_helper(fd, filp, on, &dev->async_queue);
 }
 
@@ -271,6 +272,7 @@ static int imx6uirq_fasync(int fd, struct file *filp, int on)
  */
 static int imx6uirq_release(struct inode *inode, struct file *filp)
 {
+	printk("%d\n",__LINE__);
 	return imx6uirq_fasync(-1, filp, 0);
 }
 
@@ -280,7 +282,7 @@ static struct file_operations imx6uirq_fops = {
 	.open = imx6uirq_open,
 	.read = imx6uirq_read,
 	.poll = imx6uirq_poll,
-	.fasync = imx6uirq_fasync,
+	.fasync = imx6uirq_fasync,/*app执行fcntl()后会调用.fasync */
 	.release = imx6uirq_release,
 };
 
@@ -348,5 +350,5 @@ static void __exit imx6uirq_exit(void)
 module_init(imx6uirq_init);
 module_exit(imx6uirq_exit);
 MODULE_LICENSE("GPL");
-	
+MODULE_AUTHOR("lavin");
 	
