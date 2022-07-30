@@ -21,7 +21,7 @@
 #include <asm/io.h>
  
 #define KEYINPUT_CNT		1			/* 设备号个数 	*/
-#define KEYINPUT_NAME		"keyinput"	/* 名字 		*/
+#define KEYINPUT_NAME		"user-keyinput"	/* 名字 		*/
 #define KEY0VALUE			0X01		/* KEY0按键值 	*/
 #define INVAKEY				0XFF		/* 无效的按键值 */
 #define KEY_NUM				1			/* 按键数量 	*/
@@ -104,7 +104,7 @@ static int keyio_init(void)
 	char name[10];
 	int ret = 0;
 	
-	keyinputdev.nd = of_find_node_by_path("/key");
+	keyinputdev.nd = of_find_node_by_path("/userkey");
 	if (keyinputdev.nd== NULL){
 		printk("key node not find!\r\n");
 		return -EINVAL;
